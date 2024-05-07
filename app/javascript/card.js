@@ -1,35 +1,36 @@
 const pay = () => {
-  Payjp.setPublicKey(process.env.PAYJP_PUBLIC_KEY); // PAY.JPテスト公開鍵
-  const form = document.getElementById("charge-form");
+  const publicKey = gon.public_key;
+  const payjp = Payjp(publicKey);
+  const elements = payjp.elements();
+
+  // Elementsをマウントする既存のHTML要素に対応するIDを使用
+  const cardNumberElement = elements.create('cardNumber');
+  cardNumberElement.mount('#card-number');  // カード番号入力フィールド
+
+  const cardExpiryElement = elements.create('cardExpiry');
+  cardExpiryElement.mount('#card-exp-month'); // 有効期限入力フィールド。注意: 通常は月と年を別々に扱いますが、Elementsでは一つの入力フィールドで処理します。
+
+  const cardCvcElement = elements.create('cardCvc');
+  cardCvcElement.mount('#card-cvc'); // CVC入力フィールド
+
+  const form = document.getElementById('charge-form');
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const formResult = document.getElementById("charge-form");
-    const formData = new FormData(formResult);
-
-    const card = {
-      number: formData.get("pay_form[number]"),
-      cvc: formData.get("pay_form[cvc]"),
-      exp_month: formData.get("pay_form[exp_month]"),
-      exp_year: `20${formData.get("pay_form[exp_year]")}`,
-    };
-
-    Payjp.createToken(card, (status, response) => {
-      if (status == 200) {
+    // トークンを生成し、サーバーへ送信
+    payjp.createToken(cardNumberElement).then(function (response) {
+      if (response.error) {
+        console.error(response.error.message);  // エラー処理を追加
+      } else {
         const token = response.id;
         const renderDom = document.getElementById("charge-form");
-        const tokenObj = `<input value=${token} name='token' > `;
+        const tokenObj = `<input value=${token} name='token' type="hidden">`;
         renderDom.insertAdjacentHTML("beforeend", tokenObj);
+
+        form.submit();  // トークンを付与した後、フォームをサブミット
       }
-
-      document.getElementById("card-number").removeAttribute("name");
-      document.getElementById("card-cvc").removeAttribute("name");
-      document.getElementById("card-exp-month").removeAttribute("name");
-      document.getElementById("card-exp-year").removeAttribute("name");
-
-      document.getElementById("charge-form").submit();
     });
   });
 };
 
-window.addEventListener("turbo:load", pay);app/javascript/card.js
+window.addEventListener("turbo:load", pay);

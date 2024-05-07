@@ -1,23 +1,23 @@
 class OrdersController < ApplicationController
+  before_action :authenticate_user!
+  before_action :set_item
+  before_action :move_to_index
+
   def index
+    gon.public_key = ENV["PAYJP_PUBLIC_KEY"]
     #(学習コメント)ルーティングでネストしているので親モデル_idを取得している
-    @item = Item.find(params[:item_id])
     @order = PayForm.new
   end
 
   def create
     binding.pry
-    @item = Item.find(params[:item_id])
     @order = PayForm.new(order_params)
-  
     if @order.valid? #バリデーションチェック
       @order.save #trueなら、フォームオブジェクトのsaveメソッドの呼び出し
       redirect_to root_path #処理後はリダイレクト
     else
-      @item = Item.find(params[:item_id]) # indexで必要な@itemを再定義
       render :index, status: :unprocessable_entity
     end
-  
   end
 
   private
@@ -39,4 +39,13 @@ def pay_item
     card: order_params[:token], # カード情報
     currency: 'jpy' # 通貨単位
   )
+end
+
+def set_item
+  @item = Item.find(params[:item_id])
+end
+
+def move_to_index
+  return redirect_to root_path if current_user.id == @item.user.id
+end
 end
