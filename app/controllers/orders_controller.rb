@@ -15,7 +15,7 @@ class OrdersController < ApplicationController
       redirect_to root_path #処理後はリダイレクト
     else
       @item = Item.find(params[:item_id]) # indexで必要な@itemを再定義
-      render 'index' # indexの再描写
+      render :index, status: :unprocessable_entity
     end
   
   end
@@ -30,6 +30,13 @@ def order_params
     :banchi,
     :building_name,
     :number
-    ).merge(user_id: current_user.id,item_id: params[:item_id])
+    ).merge(user_id: current_user.id,item_id: params[:item_id], token: params[:token])
 end
+def pay_item 
+  Payjp.api_key = ENV['PAYJP_SECRET_KEY'] #環境変数と合わせましょう
+  Payjp::Charge.create(
+    amount: @item.price, # 決済額
+    card: order_params[:token], # カード情報
+    currency: 'jpy' # 通貨単位
+  )
 end
