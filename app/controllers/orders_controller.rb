@@ -5,6 +5,21 @@ class OrdersController < ApplicationController
     @order = PayForm.new
   end
 
+  def create
+    binding.pry
+    @item = Item.find(params[:item_id])
+    @order = PayForm.new(order_params)
+  
+    if @order.valid? #バリデーションチェック
+      @order.save #trueなら、フォームオブジェクトのsaveメソッドの呼び出し
+      redirect_to root_path #処理後はリダイレクト
+    else
+      @item = Item.find(params[:item_id]) # indexで必要な@itemを再定義
+      render 'index' # indexの再描写
+    end
+  
+  end
+
   private
 
 def order_params
