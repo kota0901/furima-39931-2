@@ -7,7 +7,7 @@ class PayForm
     validates :region_id, numericality: { other_than: 0 }
     validates :municipalities
     validates :banchi
-    validates :number, { with: /\A[0-9]+\z/ , maximum: 11}
+    validates :number, length: { maximum: 11 }
     validates :user_id
     validates :item_id 
   end
