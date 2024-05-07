@@ -63,6 +63,7 @@ class ItemsController < ApplicationController
   end
 
   def move_to_index
-    return redirect_to root_path if current_user.id != @item.user.id
+    # (学習用コメント) 出品したユーザー＆購入されていた場合トップページにリダイレクトする
+    return redirect_to root_path if current_user.id != @item.user.id || @item.order.present?
   end
 end

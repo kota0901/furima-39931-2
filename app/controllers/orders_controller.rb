@@ -33,7 +33,7 @@ def order_params
     ).merge(user_id: current_user.id,item_id: params[:item_id], token: params[:token])
 end
 def pay_item 
-  Payjp.api_key = ENV['PAYJP_SECRET_KEY'] #環境変数と合わせましょう
+  Payjp.api_key = ENV['PAYJP_SECRET_KEY'] 
   Payjp::Charge.create(
     amount: @item.price, # 決済額
     card: order_params[:token], # カード情報
@@ -46,6 +46,7 @@ def set_item
 end
 
 def move_to_index
-  return redirect_to root_path if current_user.id == @item.user.id
+  # (学習用コメント) 出品したユーザー＆購入されていた場合トップページにリダイレクトする
+  return redirect_to root_path if current_user.id == @item.user.id || @item.order.present?
 end
 end
