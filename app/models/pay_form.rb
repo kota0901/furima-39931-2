@@ -1,6 +1,6 @@
 class PayForm
   include ActiveModel::Model
-  attr_accessor :postal_code, :region_id, :municipalities, :banchi, :building_name, :price, :user_id, :token
+  attr_accessor :postal_code, :region_id, :municipalities, :banchi, :building_name, :number, :price, :user_id, :item_id, :token
 
   with_options presence: true do
     validates :postal_code, format: { with: /\A\d{3}[-]\d{4}\z/}
