@@ -102,6 +102,7 @@ app/assets/stylesheets/items/new.css %>
           </div>
           <span class="sell-yen">¥</span>
           <%= f.text_field :price, class:"price-input", id:"item-price", placeholder:"例）300" %>
+          <span id="price-error" style="color: red; display: none;" ></span>
         </div>
         <div class="price-content">
           <span>販売手数料 (10%)</span>

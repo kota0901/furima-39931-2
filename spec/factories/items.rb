@@ -11,6 +11,7 @@ FactoryBot.define do
     association :user
 
     after(:build) do |item|
+      # attach : 取り付ける 「public/images/test_image.png」を「test_image.png」としてitemモデルにアタッチする
       item.image.attach(io: File.open('public/images/test_image.png'), filename: 'test_image.png')
     end
     
